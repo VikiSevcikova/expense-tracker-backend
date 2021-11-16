@@ -8,6 +8,7 @@ const TransactionSchema = new mongoose.Schema({
     default: Date.now
   },
   categoryId: Number,
+  categoryName: String,
   transactionType: String,
   description: String,
   currency: String,
