@@ -12,6 +12,7 @@ const TransactionSchema = new mongoose.Schema({
   amount: Number,
   paymentMethod: String,
   isDeleted: Boolean,
+  isEditing: Boolean
 });
 
 //export
@@ -29,3 +30,4 @@ module.exports = Transaction;
 // amount: 20,
 // paymentMethod: “credit card”,
 // isDeleted: false,
+// isEditing: false
