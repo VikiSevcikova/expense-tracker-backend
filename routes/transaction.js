@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Transaction = require("../models/Transaction");
 
+const cors = require("cors");
+router.use(cors());
+
 const { addNewTransaction, getAllTransaction, updateTransaction, deleteTransaction } = require("../controllers/transaction");
 
 //get all transaction list from mongo db

@@ -34,7 +34,7 @@ exports.addNewTransaction = (req, res) => {
     isDeleted
   });
   newTransaction.save()
-    .then(transaction => res.json("a new transaction added!", transaction))
+    .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json(`Error: Failed to add a new transaction ${err}`));
 };
 
@@ -53,7 +53,7 @@ exports.updateTransaction = (req, res) => {
       transaction.isDeleted = req.body.isDeleted;
 
       transaction.save()
-        .then(transaction => res.json("a new transaction updated!", transaction))
+        .then(transaction => res.json(transaction))
         .catch(err => res.status(400).json(`Error: Failed to update the transaction ${err}`));
     })
     .catch(err => res.status(400).json(`Error: transaction not found ${err}`));
@@ -62,7 +62,7 @@ exports.updateTransaction = (req, res) => {
 /* delete transaction */
 exports.deleteTransaction = (req, res) => {
   Transaction.findByIdAndDelete(req.params.id)
-    .then(transaction => res.json("transaction deleted", transaction))
+    .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json(`Error: Failed to delete the transaction ${err}`));
 };
 
