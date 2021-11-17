@@ -44,7 +44,16 @@ exports.login = async (req, res, next) => {
     }
 }
 
+exports.logout = (req, res) => {
+    res.clearCookie("userId")
+    res.status(200).json({message: "Successfully logged out!"});
+}
+
+
 const sendToken = (user, statusCode, res) => {
+    const userId = user.getId();
     const token = user.getSignedToken();
-    res.status(statusCode).json({success: true, token});
+    let days = 5 * 24 * 3600000;
+    res.cookie("userId", userId, {path: '/', expires: new Date(Date.now() + days), httpOnly: true } );
+    res.status(statusCode).json({token});
 }
