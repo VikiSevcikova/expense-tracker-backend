@@ -3,10 +3,7 @@ const mongoose = require('mongoose');
 //define schema
 const TransactionSchema = new mongoose.Schema({
   id: String,
-  date: {
-    type: Date,
-    default: Date.now
-  },
+  date: Date,
   categoryId: Number,
   categoryName: String,
   transactionType: String,
@@ -14,10 +11,8 @@ const TransactionSchema = new mongoose.Schema({
   currency: String,
   amount: Number,
   paymentMethod: String,
-  isDeleted: {
-    type: Boolean,
-    default: false
-  },
+  isDeleted: Boolean,
+  isEditing: Boolean
 });
 
 //export
@@ -35,3 +30,4 @@ module.exports = Transaction;
 // amount: 20,
 // paymentMethod: “credit card”,
 // isDeleted: false,
+// isEditing: false
