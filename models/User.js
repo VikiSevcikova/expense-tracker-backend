@@ -21,7 +21,14 @@ const UserSchema = new mongoose.Schema({
         //so we have to ask to send also the password if we need it
         select: false 
     },
-    avatar: { data: Buffer, contentType: String }
+    avatar: { 
+        data: Buffer, 
+        contentType: String 
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 });
 
 //run before save
@@ -46,7 +53,11 @@ UserSchema.methods.matchPasswords = async function(password){
 UserSchema.methods.getSignedToken = function() {
     //JWT_SECRET created with require('crypto').randomBytes(35).toString("hex")
     //we add the id od the user to get the user after decoding
-    return jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: `${process.env.JWT_EXPIRE_DAYS}d`});
+    return jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRE});
+} 
+
+UserSchema.methods.getId = function() {
+    return this._id;
 } 
 
 const User = mongoose.model("User", UserSchema);
