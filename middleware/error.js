@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
 
     error.message = err.message;
 
-    console.error(err);
+    console.error(err.message);
 
     //11000 duplicate value
     if(err.code === 11000){
