@@ -1,13 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Transaction = require("../models/Transaction");
+const cors = require("cors");
+const { getRecentTransaction } = require("../controllers/dashboard");
+
+router.use(cors());
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  Transaction.find()
-  .then(data => res.json(data))
-  .catch(err => res.status(400).json(`Error:${err}`));
-  // res.send('<h1>This is the index page.</h1>');
-});
+router.get("/", getRecentTransaction);
 
 module.exports = router;
