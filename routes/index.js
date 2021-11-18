@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
+const cors = require("cors");
+const { getRecentTransaction } = require("../controllers/dashboard");
+
+router.use(cors());
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.send('<h1>This is the index page.</h1>');
-});
+router.get("/", getRecentTransaction);
 
 module.exports = router;
