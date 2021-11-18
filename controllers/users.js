@@ -4,7 +4,7 @@ exports.currentUser = async (req, res, next) => {
     console.log("currentUser", req.cookies.userId);
     try{
         //select("+password") means that we want also to return the password, because is schema we set select to false
-        const user = await User.findOne({ id: req.cookies.userId});
+        const user = await User.findById(req.cookies.userId);
         if(!user){
             return next(new ErrorResponse("Unauthorized access, login please.", 401));
         }
