@@ -3,6 +3,7 @@ const Token = require('../models/Token');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const sendMail = require('../utils/sendMail');
+const { getResetPasswordToken, hashResetPasswordToken } = require('../utils/utils');
 
 exports.register = async (req, res, next) => {
     console.log('register');
@@ -54,22 +55,26 @@ exports.forgotPassword = async (req, res, next) => {
     try {
         const schema = Joi.object({ email: Joi.string().email().required() });
         const { error } = schema.validate(req.body);
-        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+        const { email } = req.body;
 
-        const user = await User.findOne({ email: req.body.email });
+        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+        const user = await User.findOne({ email: email });
         if (!user)
             return next(new ErrorResponse("User with given email doesn't exist.", 404));
 
-        const token = await Token.findOne({ userId: user._id });
+        let token = await Token.findOne({ userId: user._id });
+        const resetToken = getResetPasswordToken();
         if (!token) {
-            const resetToken = token.getResetPasswordToken();
             token = await new Token({
                 userId: user._id,
-                token: token.hashResetPasswordToken(resetToken),
-            }).save();
+                token: hashResetPasswordToken(resetToken),
+            })
+        }else{
+            token.token = hashResetPasswordToken(resetToken);
         }
+        await token.save();
 
-        const link = `${process.env.BASE_URL}/password-reset/${user._id}/${resetToken}`;;
+        const link = `${process.env.BASE_URL}/reset-password/${user._id}/${resetToken}`;;
         sendResetMail(email, link, res);
 
     } catch (error) {
@@ -83,12 +88,12 @@ exports.resetPassword = async (req, res, next) => {
         const { error } = schema.validate(req.body);
         if (error) return next(new ErrorResponse(error.details[0].message, 400));
 
-        const user = await User.findById(req.params.userId);
+        let user = await User.findById(req.params.userId);
+
         if (!user) return next(new ErrorResponse("Invalid link or already expired.", 400));
-        
         const token = await Token.findOne({
             userId: user._id,
-            token: token.token.hashResetPasswordToken(req.params.token),
+            token: hashResetPasswordToken(req.params.token),
         });
         if (!token) return next(new ErrorResponse("Invalid link or already expired.", 400));
 
