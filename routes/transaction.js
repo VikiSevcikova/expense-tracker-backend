@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Transaction = require("../models/Transaction");
 
 const cors = require("cors");
 router.use(cors());
@@ -14,9 +13,9 @@ router.route("/all").get(getAllTransaction);
 router.route("/add").post(addNewTransaction);
 
 //update 
-router.route("/update/:id").post(deleteTransaction);
+router.route("/update/:id").post(updateTransaction);
 
 //delete
-router.route("/:id").delete(deleteTransaction);
+router.route("/delete/:id").delete(deleteTransaction);
 
 module.exports = router;

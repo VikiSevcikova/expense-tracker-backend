@@ -9,7 +9,6 @@ exports.getAllTransaction = (req, res) => {
 
 /* add new transaction */
 exports.addNewTransaction = (req, res) => {
-  console.log(req.body);
 
   const date = Date.parse(req.body.date);
   const categoryId = req.body.categoryId;
@@ -65,17 +64,3 @@ exports.deleteTransaction = (req, res) => {
     .then(transaction => res.json(transaction))
     .catch(err => res.status(400).json(`Error: Failed to delete the transaction ${err}`));
 };
-
-//////////// req.body sample
-// {
-//   id: '6fecbcc-cf33-568c-50ee-dc81d740135', --> mongoose will create a new one automatically so this might not be needed
-//   date: '2021-11-16T21:51:40.493Z',
-//   categoryId: 0,
-//   categoryName: 'Food & Beverage',
-//   transactionType: 'expense',
-//   description: 'grocery',
-//   currency: 'CAD',
-//   amount: '100',
-//   paymentMethod: 'Credit Card',
-//   isDeleted: false
-// }
