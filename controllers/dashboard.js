@@ -21,17 +21,14 @@ exports.getRecentTransaction = (req, res, next) => {
 
 exports.getTranscationByDate = (req, res, next) => {
  
-    console.log(req.params)
-    const startDate = req.body.startdate
-    const endDate = req.body.enddate
+    console.log(req.query.startdate)
+
   Transaction.find({
     date: {
         // gte = Greater Than of Equal
-        // 2021-11-15
-      $gte: startDate,
+      $gte: req.query.startdate,
        // lte = Lesser Than of Equal
-       // 2021-11-17
-      $lte: endDate,
+      $lte: req.query.enddate
     },
   })
     .sort({ date: 1 })
