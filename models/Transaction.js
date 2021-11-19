@@ -19,15 +19,3 @@ const TransactionSchema = new mongoose.Schema({
 const Transaction = mongoose.model("Transaction", TransactionSchema);
 
 module.exports = Transaction;
-
-/* Data Structure Note */
-// id: xxxxxx
-// date:11/01/2021
-// categoryId: 1,
-// transactionType:"expense",
-// description:”Ramen”,
-// currency: CAD,
-// amount: 20,
-// paymentMethod: “credit card”,
-// isDeleted: false,
-// isEditing: false

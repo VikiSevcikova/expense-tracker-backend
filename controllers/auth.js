@@ -1,14 +1,18 @@
+const Joi = require('joi');
+const Token = require('../models/Token');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
+const sendMail = require('../utils/sendMail');
+const { getResetPasswordToken, hashResetPasswordToken } = require('../utils/utils');
 
 exports.register = async (req, res, next) => {
     console.log('register');
-    const {username, email, password} = req.body;
-
     try{
-        const user = await User.create({
-            username, email, password,
-        });
+        const schema = Joi.object({ username: Joi.string().required(), email: Joi.string().email().required(), password: Joi.string().min(6).required() });
+        const { error } = schema.validate(req.body);
+        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+
+        const user = await User.create(req.body);
 
         sendToken(user, 201, res);
     }catch (error){
@@ -18,14 +22,12 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     console.log("login");
-    const {email, password} = req.body;
-
-    if(!email || !password){
-        // req.status(400).json({success: false, error: "Please provide email and password."});
-        return next(new ErrorResponse("Please provide email and password.", 400));
-    }
-
     try{
+        const schema = Joi.object({ email: Joi.string().email().required(), password: Joi.string().required() });
+        const { error } = schema.validate(req.body);
+        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+
+        const {email, password} = req.body;
         //select("+password") means that we want also to return the password, because is schema we set select to false
         const user = await User.findOne({ email }).select("+password");
         if(!user){
@@ -49,6 +51,61 @@ exports.logout = (req, res) => {
     res.status(200).json({message: "Successfully logged out!"});
 }
 
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        const schema = Joi.object({ email: Joi.string().email().required() });
+        const { error } = schema.validate(req.body);
+        const { email } = req.body;
+
+        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+        const user = await User.findOne({ email: email });
+        if (!user)
+            return next(new ErrorResponse("User with given email doesn't exist.", 404));
+
+        let token = await Token.findOne({ userId: user._id });
+        const resetToken = getResetPasswordToken();
+        if (!token) {
+            token = await new Token({
+                userId: user._id,
+                token: hashResetPasswordToken(resetToken),
+            })
+        }else{
+            token.token = hashResetPasswordToken(resetToken);
+        }
+        await token.save();
+
+        const link = `${process.env.BASE_URL}/reset-password/${user._id}/${resetToken}`;;
+        sendResetMail(email, link, res);
+
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  };
+
+exports.resetPassword = async (req, res, next) => {
+    try{
+        const schema = Joi.object({ password: Joi.string().min(6).required() });
+        const { error } = schema.validate(req.body);
+        if (error) return next(new ErrorResponse(error.details[0].message, 400));
+
+        let user = await User.findById(req.params.userId);
+
+        if (!user) return next(new ErrorResponse("Invalid link or already expired.", 400));
+        const token = await Token.findOne({
+            userId: user._id,
+            token: hashResetPasswordToken(req.params.token),
+        });
+        if (!token) return next(new ErrorResponse("Invalid link or already expired.", 400));
+
+        user.password = req.body.password;
+        await user.save();
+        await token.delete();
+
+        res.status(200).json({message: "Password was changed successfully." });
+    } catch (error) {
+      next(error);
+    }
+  };
 
 const sendToken = (user, statusCode, res) => {
     const userId = user.getId();
@@ -57,3 +114,19 @@ const sendToken = (user, statusCode, res) => {
     res.cookie("userId", userId, {path: '/', expires: new Date(Date.now() + days), httpOnly: true } );
     res.status(statusCode).json({token});
 }
+
+const sendResetMail = async (email, link, res) => {
+    //clicktracking off to avoid weird looking link
+    const message = `
+          <h1>You have requested to reset your password</h1>
+          <p>Please go to this link to reset your password:</p>
+          <a href=${link} clicktracking=off>${link}</a>
+      `;
+  
+    try {
+      await sendMail(email, "ExpenseTrackify - Reset password", message);
+      res.status(200).json({message: "Email sent." });
+    } catch (err) {
+      res.status(500).json({error: "Email could not be sent." });
+    }
+  };
