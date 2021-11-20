@@ -9,7 +9,7 @@ exports.getAllTransaction = (req, res) => {
 
 /* add new transaction */
 exports.addNewTransaction = (req, res) => {
-
+console.log(req.body.date)
   const date = Date.parse(req.body.date);
   const categoryId = req.body.categoryId;
   const categoryName = req.body.categoryName;
