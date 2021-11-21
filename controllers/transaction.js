@@ -19,6 +19,7 @@ console.log(req.body.date)
   const amount = Number(req.body.amount);
   const paymentMethod = req.body.paymentMethod;
   const isDeleted = req.body.isDeleted;
+  const isEditing = req.body.isEditing;
 
   //save to db
   const newTransaction = new Transaction({
@@ -30,7 +31,8 @@ console.log(req.body.date)
     currency,
     amount,
     paymentMethod,
-    isDeleted
+    isDeleted,
+    isEditing
   });
   newTransaction.save()
     .then(transaction => res.json(transaction))
@@ -50,6 +52,7 @@ exports.updateTransaction = (req, res) => {
       transaction.amount = Number(req.body.amount);
       transaction.paymentMethod = req.body.paymentMethod;
       transaction.isDeleted = req.body.isDeleted;
+      transaction.isEditing = req.body.isEditing;
 
       transaction.save()
         .then(transaction => res.json(transaction))
