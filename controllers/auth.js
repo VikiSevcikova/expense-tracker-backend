@@ -4,6 +4,9 @@ const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const sendMail = require('../utils/sendMail');
 const { getResetPasswordToken, hashResetPasswordToken } = require('../utils/utils');
+const { OAuth2Client } = require("google-auth-library");
+
+const client = new OAuth2Client(process.env.GOOGLE_AUTH_CLIENT_ID);
 
 exports.register = async (req, res, next) => {
     console.log('register');
@@ -46,6 +49,34 @@ exports.login = async (req, res, next) => {
     }
 }
 
+exports.googleLogin = async (req, res, next) => {
+    try{
+        const { tokenId } = req.body;
+        const response = await client.verifyIdToken({idToken: tokenId, audience: process.env.GOOGLE_AUTH_CLIENT_ID});
+        const {name, email, picture} = response.payload;
+
+        const user = await User.findOne({ email });
+        console.log(user)
+        if(user){
+            sendToken(user, 200, res);
+        }else{
+            let newUser = {
+                username: name,
+                email: email,
+                password: email+process.env.JWT_SECRET,
+                avatar: picture,
+            }
+            console.log(newUser)
+            const user = await User.create(newUser);
+            console.log(user._id)
+            sendToken(user, 201, res);
+        }
+    }catch(error){
+        next(error);
+    }
+    
+}
+
 exports.logout = (req, res) => {
     res.clearCookie("userId")
     res.status(200).json({message: "Successfully logged out!"});
@@ -58,7 +89,7 @@ exports.forgotPassword = async (req, res, next) => {
         const { email } = req.body;
 
         if (error) return next(new ErrorResponse(error.details[0].message, 400));
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ email: email, isDeleted: false });
         if (!user)
             return next(new ErrorResponse("User with given email doesn't exist.", 404));
 
@@ -108,9 +139,12 @@ exports.resetPassword = async (req, res, next) => {
   };
 
 const sendToken = (user, statusCode, res) => {
-    const userId = user.getId();
+    const userId = user._id;
+    console.log(userId)
     const token = user.getSignedToken();
+    console.log("sendToken",token)
     let days = 5 * 24 * 3600000;
+    res.clearCookie("userId");
     res.cookie("userId", userId, {path: '/', expires: new Date(Date.now() + days), httpOnly: true } );
     res.status(statusCode).json({token});
 }
@@ -127,6 +161,6 @@ const sendResetMail = async (email, link, res) => {
       await sendMail(email, "ExpenseTrackify - Reset password", message);
       res.status(200).json({message: "Email sent." });
     } catch (err) {
-      res.status(500).json({error: "Email could not be sent." });
+      res.status(500).json({error: "Sorry, something went wrong." });
     }
   };
