@@ -22,12 +22,7 @@ const UserSchema = new mongoose.Schema({
         select: false 
     },
     avatar: { 
-        data: Buffer, 
-        contentType: String 
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false
+        type: String
     }
 });
 
@@ -53,11 +48,8 @@ UserSchema.methods.matchPasswords = async function(password){
 UserSchema.methods.getSignedToken = function() {
     //JWT_SECRET created with require('crypto').randomBytes(35).toString("hex")
     //we add the id od the user to get the user after decoding
+    console.log("getSignedToken",this._id)
     return jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRE});
-} 
-
-UserSchema.methods.getId = function() {
-    return this._id;
 } 
 
 const User = mongoose.model("User", UserSchema);
