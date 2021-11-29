@@ -22,7 +22,7 @@ exports.getRecentTransaction = (req, res, next) => {
 exports.getTranscationByDate = (req, res, next) => {
  
     console.log(req.query.startdate)
-
+    console.log(req.query.enddate)
   Transaction.find({
     date: {
         // gte = Greater Than of Equal
