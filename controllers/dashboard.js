@@ -1,6 +1,6 @@
 const Transaction = require("../models/Transaction");
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 app.use(express.json());
 
 exports.getAllTransaction = (req, res, next) => {
@@ -20,14 +20,14 @@ exports.getRecentTransaction = (req, res, next) => {
 };
 
 exports.getTranscationByDate = (req, res, next) => {
- 
-    console.log(req.query.startdate)
+  console.log(req.query);
+  console.log(req.query.startdate);
 
   Transaction.find({
     date: {
-        // gte = Greater Than of Equal
+      // gte = Greater Than of Equal
       $gte: req.query.startdate,
-       // lte = Lesser Than of Equal
+      // lte = Lesser Than of Equal
       $lte: req.query.enddate
     },
   })
