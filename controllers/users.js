@@ -18,31 +18,18 @@ exports.currentUser = async (req, res, next) => {
 exports.editUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.cookies.userId);
+    console.log(user)
     if (!user) {
       return res.status(400).send("User doesn't exist");
     } else {
       console.log("editing user req.body is", req.body);
 
-      //save to db
-      const username = user.username;
-      const email = user.email;
-      // const password = await bcrypt.hash(req.body.newPassword); //hash pw
-      const password = req.body.newPassword;
-      const avatar = req.body;
-
-      const newUser = await new User({
-        username,
-        email,
-        password,
-        avatar
-      });
-
-      console.log("new user is", newUser);
-
-      newUser.save()
-        .then(user => res.json(user))
-        .catch(err => res.status(400).json(`Error: Failed to update the user ${err}`));
-    };
+      user.password = req.body.password;
+      console.log(user)
+      user.save();
+      
+      return res.status(200).json(user);
+    }
   } catch (error) {
     return res.status(400).json(`Error: user not found ${error}`);
   }
@@ -52,7 +39,7 @@ exports.editUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.cookies.userId);
-    res.status(200).json({ message: "Account was deleted." });
+    return res.status(200).json({ message: "Account was deleted." });
   } catch (error) {
     next(error);
   }

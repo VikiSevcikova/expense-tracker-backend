@@ -2,29 +2,32 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: [true, "Please provide a username."]
+const UserSchema = new mongoose.Schema(
+    {
+        username: {
+            type: String,
+            required: [true, "Please provide a username."]
+        },
+        email: {
+            type: String,
+            required: [true, "Please provide an email."],
+            unique: true,
+            match: [ /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Please provide a valid email."]
+        },
+        password: {
+            type: String,
+            required: [true, "Please add a password."],
+            minlength: [6, "Password is shorter than minimum allowed length (6)."],
+            //false, because we do not want to return password everytime we query the user
+            //so we have to ask to send also the password if we need it
+            select: false 
+        },
+        avatar: { 
+            type: String
+        },
     },
-    email: {
-        type: String,
-        required: [true, "Please provide an email."],
-        unique: true,
-        match: [ /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Please provide a valid email."]
-    },
-    password: {
-        type: String,
-        required: [true, "Please add a password."],
-        minlength: [6, "Password is shorter than minimum allowed length (6)."],
-        //false, because we do not want to return password everytime we query the user
-        //so we have to ask to send also the password if we need it
-        select: false 
-    },
-    avatar: { 
-        type: String
-    }
-});
+    { timestamps: true }
+);
 
 //run before save
 UserSchema.pre("save", async function(next){
