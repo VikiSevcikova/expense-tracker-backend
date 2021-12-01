@@ -30,7 +30,6 @@ exports.editUser = async (req, res, next) => {
         user.email = req.body.email || user.email;
         user.avatar = req.body.avatar || user.avatar;
       }
-
       const updatedUser = await user.save();
       return res.status(200).json(updatedUser);
     };

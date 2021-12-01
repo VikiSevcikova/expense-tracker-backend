@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 //define schema
 const TransactionSchema = new mongoose.Schema({
-  id: String,
+  //userId: String,
   date: Date,
   categoryId: Number,
   categoryName: String,
