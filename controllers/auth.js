@@ -134,11 +134,11 @@ exports.resetPassword = async (req, res, next) => {
 };
 
 const sendToken = (user, statusCode, res) => {
-  const userId = user._id;
+  // const userId = user._id;
   const token = user.getSignedToken();
-  let days = 5 * 24 * 3600000;
-  res.clearCookie("userId");
-  res.cookie("userId", userId, { path: '/', expires: new Date(Date.now() + days), httpOnly: true });
+  // let days = 5 * 24 * 3600000;
+  // res.clearCookie("userId");
+  // res.cookie("userId", userId, { path: '/', expires: new Date(Date.now() + days), httpOnly: true });
   res.status(statusCode).json({ token });
 };
 
