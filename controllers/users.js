@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const bcrypt = require("bcryptjs"); //hash password
+const bcrypt = require("bcryptjs"); //to hash password
 
 exports.currentUser = async (req, res, next) => {
   console.log("currentUser", req.cookies.userId);
@@ -21,27 +21,18 @@ exports.editUser = async (req, res, next) => {
     if (!user) {
       return res.status(400).send("User doesn't exist");
     } else {
-      console.log("editing user req.body is", req.body);
+      //update password or avatar
+      console.log("editing user", req.body);
+      //{password: "456789"}, 
+      //{avatar: 'C:\\fakepath\\Screenshot_20211128-113425_Gmail.jpg'}
 
-      //save to db
-      const username = user.username;
-      const email = user.email;
-      // const password = await bcrypt.hash(req.body.newPassword); //hash pw
-      const password = req.body.newPassword;
-      const avatar = req.body;
+      user.username = req.body.username || user.username;
+      user.email = req.body.email || user.email;
+      user.password = req.body.password || user.password;
+      user.avatar = req.body.avatar || user.avatar;
 
-      const newUser = await new User({
-        username,
-        email,
-        password,
-        avatar
-      });
-
-      console.log("new user is", newUser);
-
-      newUser.save()
-        .then(user => res.json(user))
-        .catch(err => res.status(400).json(`Error: Failed to update the user ${err}`));
+      const updatedUser = await user.save();
+      return res.status(200).json(updatedUser);
     };
   } catch (error) {
     return res.status(400).json(`Error: user not found ${error}`);
@@ -52,7 +43,7 @@ exports.editUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.cookies.userId);
-    res.status(200).json({ message: "Account was deleted." });
+    return res.status(200).json({ message: "Account was deleted." });
   } catch (error) {
     next(error);
   }
