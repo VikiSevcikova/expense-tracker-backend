@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 exports.getAllTransaction = (req, res, next) => {
-  Transaction.find()
+  Transaction.find({userId: req.user._id})
     .sort({ date: 1 })
     .then((data) => res.json(data))
     .catch((err) => res.status(400).json(`Error:${err}`));
@@ -12,7 +12,7 @@ exports.getAllTransaction = (req, res, next) => {
 
 exports.getRecentTransaction = (req, res, next) => {
   // get limit 5 items for recent transactions
-  Transaction.find()
+  Transaction.find({userId: req.user._id})
     .sort({ date: -1 })
     .limit(5)
     .then((data) => res.json(data))
@@ -30,6 +30,7 @@ exports.getTranscationByDate = (req, res, next) => {
       // lte = Lesser Than of Equal
       $lte: req.query.enddate
     },
+    userId: req.user._id
   })
     .sort({ date: 1 })
     .then((data) => res.json(data))
