@@ -54,7 +54,6 @@ exports.googleLogin = async (req, res, next) => {
     const { name, email, picture } = response.payload;
 
     const user = await User.findOne({ email });
-    console.log(user);
     if (user) {
       sendToken(user, 200, res);
     } else {
@@ -64,9 +63,7 @@ exports.googleLogin = async (req, res, next) => {
         password: email + process.env.JWT_SECRET,
         avatar: picture,
       };
-      console.log(newUser);
       const user = await User.create(newUser);
-      console.log(user._id);
       sendToken(user, 201, res);
     }
   } catch (error) {
@@ -138,9 +135,7 @@ exports.resetPassword = async (req, res, next) => {
 
 const sendToken = (user, statusCode, res) => {
   const userId = user._id;
-  console.log(userId);
   const token = user.getSignedToken();
-  console.log("sendToken", token);
   let days = 5 * 24 * 3600000;
   res.clearCookie("userId");
   res.cookie("userId", userId, { path: '/', expires: new Date(Date.now() + days), httpOnly: true });
