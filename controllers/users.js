@@ -1,8 +1,6 @@
 const User = require("../models/User");
-const bcrypt = require("bcryptjs"); //to hash password
 
 exports.currentUser = async (req, res, next) => {
-  console.log("currentUser", req.cookies.userId);
   try {
     const user = await User.findById(req.cookies.userId);
     if (!user) {
@@ -22,14 +20,16 @@ exports.editUser = async (req, res, next) => {
       return res.status(400).send("User doesn't exist");
     } else {
       //update password or avatar
-      console.log("editing user", req.body);
-      //{password: "456789"}, 
-      //{avatar: 'C:\\fakepath\\Screenshot_20211128-113425_Gmail.jpg'}
-
-      user.username = req.body.username || user.username;
-      user.email = req.body.email || user.email;
-      user.password = req.body.password || user.password;
-      user.avatar = req.body.avatar || user.avatar;
+      if (req.body.password) {
+        user.username = req.body.username || user.username;
+        user.email = req.body.email || user.email;
+        user.password = req.body.password || user.password;
+        user.avatar = req.body.avatar || user.avatar;
+      } else {
+        user.username = req.body.username || user.username;
+        user.email = req.body.email || user.email;
+        user.avatar = req.body.avatar || user.avatar;
+      }
 
       const updatedUser = await user.save();
       return res.status(200).json(updatedUser);
