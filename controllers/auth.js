@@ -9,7 +9,6 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_AUTH_CLIENT_ID);
 
 exports.register = async (req, res, next) => {
-  console.log('register');
   try {
     const schema = Joi.object({ username: Joi.string().required(), email: Joi.string().email().required(), password: Joi.string().min(6).required() });
     const { error } = schema.validate(req.body);
@@ -24,7 +23,6 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-  console.log("login");
   try {
     const schema = Joi.object({ email: Joi.string().email().required(), password: Joi.string().required() });
     const { error } = schema.validate(req.body);
