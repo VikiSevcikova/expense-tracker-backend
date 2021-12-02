@@ -19,23 +19,11 @@ exports.editUser = async (req, res, next) => {
     if (!user) {
       return res.status(400).send("User doesn't exist");
     } else {
-      //update password or avatar
-      // if (req.body.password) {
-      //   user.username = req.body.username || user.username;
-      //   user.email = req.body.email || user.email;
-      //   user.password = req.body.password || user.password;
-      //   user.avatar = req.body.avatar || user.avatar;
-      // } else {
-      //   user.username = req.body.username || user.username;
-      //   user.email = req.body.email || user.email;
-      //   user.avatar = req.body.avatar || user.avatar;
-      // }
-
-      for(attribute in req.body){
+      for (attribute in req.body) {
         user[attribute] = req.body[attribute];
       }
       const updatedUser = await user.save();
-      return res.status(200).json({updatedUser, message: "User details were changed"});
+      return res.status(200).json({ updatedUser, message: "User details were changed" });
     }
   } catch (error) {
     return res.status(400).json(`Error: user not found ${error}`);
