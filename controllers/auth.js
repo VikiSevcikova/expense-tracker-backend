@@ -72,11 +72,6 @@ exports.googleLogin = async (req, res, next) => {
 
 };
 
-exports.logout = (req, res) => {
-  res.clearCookie("userId");
-  res.status(200).json({ message: "Successfully logged out!" });
-};
-
 exports.forgotPassword = async (req, res, next) => {
   try {
     const schema = Joi.object({ email: Joi.string().email().required() });
