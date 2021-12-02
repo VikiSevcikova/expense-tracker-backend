@@ -5,17 +5,18 @@ const cors = require("cors");
 router.use(cors());
 
 const { addNewTransaction, getAllTransaction, updateTransaction, deleteTransaction } = require("../controllers/transaction");
+const { protect } = require("../middleware/auth");
 
 //get all transaction list from mongo db
-router.route("/all").get(getAllTransaction);
+router.route("/all").get(protect, getAllTransaction);
 
 //add new transaction
-router.route("/add").post(addNewTransaction);
+router.route("/add").post(protect, addNewTransaction);
 
 //update 
-router.route("/update/:id").post(updateTransaction);
+router.route("/update/:id").post(protect, updateTransaction);
 
 //delete
-router.route("/delete/:id").delete(deleteTransaction);
+router.route("/delete/:id").delete(protect, deleteTransaction);
 
 module.exports = router;
