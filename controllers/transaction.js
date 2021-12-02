@@ -11,7 +11,10 @@ exports.getAllTransaction = (req, res) => {
 /* add new transaction */
 exports.addNewTransaction = async (req, res) => {
   try{
-    const user = await User.findById(req.cookies.userId);
+    console.log(req.body)
+    const user = await User.findById(req.user._id);
+    console.log(user)
+
     const userId = user._id;
     const date = Date.parse(req.body.date);
     const categoryId = req.body.categoryId;
@@ -40,9 +43,9 @@ exports.addNewTransaction = async (req, res) => {
     });
     newTransaction.save()
       .then(transaction => res.json(transaction))
-      .catch(err => res.status(400).json(`Error: Failed to add a new transaction ${err}`));
+      .catch(err => {console.log(err); return res.status(400).json(`Error: Failed to add a new transaction ${err}`)});
   }catch(error){
-    res.status(500).json(`Error: Sorry, something went wrong.`);
+    return res.status(500).json(`Error: Sorry, there is an issues on the server.`);
   }
 };
 
@@ -65,7 +68,7 @@ exports.updateTransaction = (req, res) => {
         .then(transaction => res.json(transaction))
         .catch(err => res.status(400).json(`Error: Failed to update the transaction ${err}`));
     })
-    .catch(err => res.status(400).json(`Error: transaction not found ${err}`));
+    .catch(err => res.status(400).json(`Error: Transaction not found ${err}`));
 };
 
 /* delete transaction */
