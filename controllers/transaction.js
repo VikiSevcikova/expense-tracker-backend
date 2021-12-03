@@ -11,9 +11,7 @@ exports.getAllTransaction = (req, res) => {
 /* add new transaction */
 exports.addNewTransaction = async (req, res) => {
   try{
-    console.log(req.body)
     const user = await User.findById(req.user._id);
-    console.log(user)
 
     const userId = user._id;
     const date = Date.parse(req.body.date);
