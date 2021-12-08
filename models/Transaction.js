@@ -13,6 +13,8 @@ const TransactionSchema = new mongoose.Schema({
   paymentMethod: String,
   isDeleted: Boolean,
   isEditing: Boolean,
+  divideBy: Number,
+  splitAmount: Number
 });
 
 //export
