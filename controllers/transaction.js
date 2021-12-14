@@ -24,6 +24,8 @@ exports.addNewTransaction = async (req, res) => {
     const paymentMethod = req.body.paymentMethod;
     const isDeleted = req.body.isDeleted;
     const isEditing = req.body.isEditing;
+    const divideBy = Number(req.body.divideBy);
+    const splitAmount = Number(req.body.splitAmount);
 
     //save to db
     const newTransaction = new Transaction({
@@ -37,7 +39,9 @@ exports.addNewTransaction = async (req, res) => {
       amount,
       paymentMethod,
       isDeleted,
-      isEditing
+      isEditing,
+      divideBy,
+      splitAmount
     });
     newTransaction.save()
       .then(transaction => res.json(transaction))
@@ -61,6 +65,8 @@ exports.updateTransaction = (req, res) => {
       transaction.paymentMethod = req.body.paymentMethod;
       transaction.isDeleted = req.body.isDeleted;
       transaction.isEditing = req.body.isEditing;
+      transaction.divideBy = Number(req.body.divideBy);
+      transaction.splitAmount = Number(req.body.splitAmount);
 
       transaction.save()
         .then(transaction => res.json(transaction))
