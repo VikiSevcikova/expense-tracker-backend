@@ -42,18 +42,6 @@ UserSchema.pre("save", async function(next){
     next();
 });
 
-// //run before findOneAndUpdate
-// UserSchema.pre("findOneAndUpdate", async function(next){
-//     console.log(this.getUpdate().$set.password)
-//     if(!this.getUpdate().$set.password){
-//         next();
-//     }
-//     const salt = await bcrypt.genSalt(10);
-//     this.findOneAndUpdate({}, {password: bcrypt.hash(this.password, salt)});
-//     //it will save the user with changed password
-//     next();
-// });
-
 //with mongoose we are able to create methods on created users
 //this method returns comparison on the user which was returned (user.matchPassword(password))
 UserSchema.methods.matchPasswords = async function(password){
