@@ -129,24 +129,23 @@ exports.resetPassword = async (req, res, next) => {
 };
 
 const sendToken = (user, statusCode, res) => {
-  // const userId = user._id;
   const token = user.getSignedToken();
-  // let days = 5 * 24 * 3600000;
-  // res.clearCookie("userId");
-  // res.cookie("userId", userId, { path: '/', expires: new Date(Date.now() + days), httpOnly: true });
   res.status(statusCode).json({ token });
 };
 
 const sendResetMail = async (email, link, res) => {
-  //clicktracking off to avoid weird looking link
   const message = `
           <h1>You have requested to reset your password</h1>
           <p>Please go to this link to reset your password:</p>
           <a href=${link} clicktracking=off>${link}</a>
+          <p>Enjoy our app and have a wonderful day!</p>
+          </br>
+          <p>All the best,</p>
+          <p>Expense Trackify Team</p>
       `;
 
   try {
-    await sendMail(email, "ExpenseTrackify - Reset password", message);
+    await sendMail(email, "Expense Trackify - Reset password", message);
     res.status(200).json({ message: "Email sent." });
   } catch (err) {
     res.status(500).json({ error: "Sorry, something went wrong." });
