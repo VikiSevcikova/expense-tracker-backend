@@ -11,5 +11,8 @@ router.use(cors());
 router.get("/all-transaction", protect, getAllTransaction);
 router.get("/recent-transaction", protect, getRecentTransaction);
 router.get("/transaction", protect, getTranscationByDate);
+router.get("/", (req, res) => {
+    res.send('Hello to expense-trackify back-end')
+  });
 
 module.exports = router;
